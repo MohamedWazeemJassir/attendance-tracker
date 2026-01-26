@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Teachers</h2>
+
+<a href="{% url 'teacher_create' %}">Add Teacher</a>
+
+<table border="1">
+  <tr>
+    <th>Username</th>
+    <th>Employee ID</th>
+    <th>Actions</th>
+  </tr>
+
+  {% for t in teachers %}
+  <tr>
+    <td>{{ t.user.username }}</td>
+    <td>{{ t.employee_id }}</td>
+    <td>
+      <a href="{% url 'teacher_edit' t.id %}">Edit</a> |
+      <a href="{% url 'teacher_delete' t.id %}">Delete</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

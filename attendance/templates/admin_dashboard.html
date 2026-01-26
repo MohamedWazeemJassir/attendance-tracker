@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Admin Dashboard</h1>
+
+<ul>
+  <li>Total Students: {{ total_students }}</li>
+  <li>Total Teachers: {{ total_teachers }}</li>
+  <li>Total Attendance Records: {{ total_attendance }}</li>
+  <li>Today Present: {{ today_present }}</li>
+  <li>Today Absent: {{ today_absent }}</li>
+</ul>
+
+{% endblock %}

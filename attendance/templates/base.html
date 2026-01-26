@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Attendance Tracker</title>
+  <style>
+    nav {
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  {% if not user.is_authenticated %}
+    <a href="{% url 'home' %}">Home</a>
+    <a href="{% url 'login' %}">Login</a>
+
+  {% else %}
+    {% if user.userprofile.role == "ADMIN" %}
+      <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+      <a href="{% url 'teacher_list' %}">Teachers</a>
+      <a href="{% url 'student_list' %}">Students</a>
+      <a href="{% url 'attendance_report' %}">Reports</a>
+
+    {% elif user.userprofile.role == "TEACHER" %}
+      <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
+      <a href="{% url 'assigned_students' %}">My Students</a>
+      <a href="{% url 'mark_attendance' %}">Mark Attendance</a>
+      <a href="{% url 'attendance_report' %}">Reports</a>
+    {% endif %}
+
+    <span style="float:right;">
+      {{ user.username }} |
+      <a href="{% url 'logout' %}">Logout</a>
+    </span>
+  {% endif %}
+</nav>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

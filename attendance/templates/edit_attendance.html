@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Edit Attendance</h2>
+
+<p>
+  Student: <strong>{{ attendance.student.name }}</strong><br>
+  Date: <strong>{{ attendance.date }}</strong>
+</p>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Update</button>
+</form>
+
+{% endblock %}

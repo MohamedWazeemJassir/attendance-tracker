@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>My Assigned Students</h2>
+
+{% if students %}
+<table border="1">
+  <tr>
+    <th>Name</th>
+    <th>Roll Number</th>
+  </tr>
+
+  {% for s in students %}
+  <tr>
+    <td>{{ s.name }}</td>
+    <td>{{ s.roll_number }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No students assigned yet.</p>
+{% endif %}
+
+{% endblock %}

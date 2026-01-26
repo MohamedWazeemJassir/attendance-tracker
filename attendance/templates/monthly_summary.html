@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>
+  Monthly Summary – {{ student.name }}
+</h2>
+
+<form method="get">
+  <label>Select Month:</label>
+  <input type="month" name="month">
+  <button type="submit">View</button>
+</form>
+
+<ul>
+  <li>Total Days: {{ total }}</li>
+  <li>Present: {{ present }} ({{ present_percent }}%)</li>
+  <li>Absent: {{ absent }} ({{ absent_percent }}%)</li>
+</ul>
+
+{% endblock %}

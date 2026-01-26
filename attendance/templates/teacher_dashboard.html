@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Teacher Dashboard</h1>
+<ul>
+  <li>Assigned Students: {{ total_students }}</li>
+  <li>Today Present: {{ today_present }}</li>
+  <li>Today Absent: {{ today_absent }}</li>
+</ul>
+{% endblock %}
