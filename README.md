@@ -1,51 +1,3 @@
-# 📘 Student Attendance Tracker
-
-## 📌 Overview
-
-**Student Attendance Tracker** is a Django-based web application that allows educational institutions to manage students and track daily attendance with **role-based access control**.
-
-### Key Roles
-- **Admin**: Manages teachers, students, assignments, and views all reports
-- **Teacher**: Marks attendance, views assigned students, and edits previous attendance
-
----
-
-## ✨ Features
-
-### Authentication & Authorization
-- Secure login/logout
-- Role-based access (Admin / Teacher)
-
-### Admin Features
-- Create / Edit / Delete Teachers
-- Create / Edit / Delete Students
-- Assign students to teachers
-- View attendance reports for all students
-
-### Teacher Features
-- View assigned students
-- Mark daily attendance
-- Edit previous day’s attendance
-- View reports filtered by date, student, or class
-
-### Reporting
-- Date-wise attendance (default: today)
-- Student-wise attendance report
-- Class-wise filtering
-- Monthly summary (present % / absent %)
-- Export student attendance as CSV
-
----
-
-## 🛠️ Tech Stack
-
-- **Backend**: Django
-- **Database**: PostgreSQL
-- **Frontend**: Django Templates (HTML)
-- **Auth**: Django Authentication System
-
----
-
 ## 📂 Project Structure (Simplified)
 
 # 📘 Student Attendance Tracker
@@ -97,14 +49,14 @@
 ---
 
 ## 📂 Project Structure (Simplified)
-
+```bash
 attendance-tracker/
 ├── attendance/ # Core app
     ├── templates/ # HTML templates
 ├── tracker/ # Project settings
 ├── manage.py
 ├── README.md
-
+```
 ---
 
 ## ⚙️ Setup Instructions
