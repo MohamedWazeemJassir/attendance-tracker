@@ -1,48 +1,401 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Student Attendance Tracker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Student Attendance Tracker{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
   <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --primary-light: #3b82f6;
+      --secondary: #10b981;
+      --background: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border: #334155;
+      --shadow: rgba(0, 0, 0, 0.3);
+      --accent: #f59e0b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+    }
+
+    /* Navigation Container */
     nav {
-      padding: 10px;
-      margin-bottom: 20px;
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 6px -1px var(--shadow);
     }
-    nav a {
-      margin-right: 15px;
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+
+    /* Logo/Brand */
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text-primary);
       text-decoration: none;
-      font-weight: bold;
+      transition: transform 0.2s ease;
     }
+
+    .nav-brand:hover {
+      transform: translateY(-2px);
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Navigation Links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .nav-link {
+      position: relative;
+      padding: 0.625rem 1.25rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+      background: var(--surface-hover);
+      transform: translateY(-1px);
+    }
+
+    .nav-link.active {
+      color: var(--primary-light);
+      background: rgba(37, 99, 235, 0.1);
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 60%;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 2px;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      transform: translateX(-50%) scaleX(1);
+    }
+
+    /* User Profile Section */
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+
+    .user-name {
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      line-height: 1;
+    }
+
+    .user-role {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      line-height: 1;
+      text-transform: capitalize;
+    }
+
+    .logout-btn {
+      padding: 0.5rem 1.25rem;
+      background: transparent;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: var(--surface);
+      color: var(--text-primary);
+      border-color: var(--text-secondary);
+      transform: translateY(-1px);
+    }
+
+    /* Auth Links (Login) */
+    .auth-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-primary {
+      padding: 0.625rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    }
+
+    /* Content Container */
+    .content-wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Role Badge */
+    .role-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--secondary);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .role-badge.admin {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--accent);
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 1024px) {
+      .nav-container {
+        padding: 0 1.5rem;
+      }
+      
+      .nav-links {
+        gap: 0.25rem;
+      }
+
+      .nav-link {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-container {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .nav-brand {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .nav-links {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .nav-user {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .user-info {
+        flex: 1;
+        justify-content: center;
+      }
+
+      .content-wrapper {
+        padding: 1rem;
+      }
+    }
+
+    /* Loading Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    nav {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .nav-link {
+      animation: fadeIn 0.5s ease-out backwards;
+    }
+
+    .nav-link:nth-child(1) { animation-delay: 0.1s; }
+    .nav-link:nth-child(2) { animation-delay: 0.15s; }
+    .nav-link:nth-child(3) { animation-delay: 0.2s; }
+    .nav-link:nth-child(4) { animation-delay: 0.25s; }
+    .nav-link:nth-child(5) { animation-delay: 0.3s; }
   </style>
 </head>
 <body>
 
 <nav>
-  {% if not user.is_authenticated %}
-    <a href="{% url 'home' %}">Home</a>
-    <a href="{% url 'login' %}">Login</a>
+  <div class="nav-container">
+    {% if not user.is_authenticated %}
+      <a href="{% url 'home' %}" class="nav-brand">
+        <div class="brand-icon">📚</div>
+        <span>AttendTrack</span>
+      </a>
+<!--       
+      <div class="nav-links">
+        <a href="{% url 'home' %}" class="nav-link">Home</a>
+      </div> -->
+      
+      <div class="auth-links">
+        <a href="{% url 'login' %}" class="btn-primary">Login</a>
+      </div>
 
-  {% else %}
-    {% if user.userprofile.role == "ADMIN" %}
-      <a href="{% url 'admin_dashboard' %}">Dashboard</a>
-      <a href="{% url 'teacher_list' %}">Teachers</a>
-      <a href="{% url 'student_list' %}">Students</a>
-      <a href="{% url 'attendance_report' %}">Reports</a>
+    {% else %}
+      <a href="{% if user.userprofile.role == 'ADMIN' %}{% url 'admin_dashboard' %}{% else %}{% url 'teacher_dashboard' %}{% endif %}" class="nav-brand">
+        <div class="brand-icon">📚</div>
+        <span>AttendTrack</span>
+      </a>
 
-    {% elif user.userprofile.role == "TEACHER" %}
-      <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
-      <a href="{% url 'assigned_students' %}">My Students</a>
-      <a href="{% url 'mark_attendance' %}">Mark Attendance</a>
-      <a href="{% url 'attendance_report' %}">Reports</a>
+      <div class="nav-links">
+        {% if user.userprofile.role == "ADMIN" %}
+          <a href="{% url 'admin_dashboard' %}" class="nav-link">Dashboard</a>
+          <a href="{% url 'teacher_list' %}" class="nav-link">Teachers</a>
+          <a href="{% url 'student_list' %}" class="nav-link">Students</a>
+          <a href="{% url 'attendance_report' %}" class="nav-link">Reports</a>
+
+        {% elif user.userprofile.role == "TEACHER" %}
+          <a href="{% url 'teacher_dashboard' %}" class="nav-link">Dashboard</a>
+          <a href="{% url 'assigned_students' %}" class="nav-link">My Students</a>
+          <a href="{% url 'mark_attendance' %}" class="nav-link">Mark Attendance</a>
+          <a href="{% url 'attendance_report' %}" class="nav-link">Reports</a>
+        {% endif %}
+      </div>
+
+      <div class="nav-user">
+        <div class="user-info">
+          <div class="user-avatar">{{ user.username|slice:":1" }}</div>
+          <div class="user-details">
+            <span class="user-name">{{ user.username }}</span>
+            <span class="user-role">{{ user.userprofile.role|lower }}</span>
+          </div>
+        </div>
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+      </div>
     {% endif %}
-
-    <span style="float:right;">
-      {{ user.username }} |
-      <a href="{% url 'logout' %}">Logout</a>
-    </span>
-  {% endif %}
+  </div>
 </nav>
 
-{% block content %}{% endblock %}
+<div class="content-wrapper">
+  {% block content %}{% endblock %}
+</div>
 
 </body>
 </html>
