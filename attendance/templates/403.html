@@ -1,2 +1,272 @@
-<h2>403 – Forbidden</h2>
-<p>You are not allowed to access this page.</p>
+{% extends "base.html" %}
+{% block title %}403 - Access Denied{% endblock %}
+{% block content %}
+
+<style>
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .error-icon-wrapper {
+    position: relative;
+    margin-bottom: 2rem;
+    animation: fadeInScale 0.6s ease-out;
+  }
+
+  .error-icon {
+    font-size: 8rem;
+    line-height: 1;
+    filter: drop-shadow(0 8px 24px rgba(239, 68, 68, 0.3));
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .error-code {
+    font-size: 6rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeInUp 0.6s ease-out 0.1s backwards;
+    letter-spacing: -0.02em;
+  }
+
+  .error-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    animation: fadeInUp 0.6s ease-out 0.2s backwards;
+  }
+
+  .error-message {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    line-height: 1.7;
+    animation: fadeInUp 0.6s ease-out 0.3s backwards;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeInUp 0.6s ease-out 0.4s backwards;
+  }
+
+  .btn {
+    padding: 0.875rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--surface-hover);
+    transform: translateY(-2px);
+    border-color: var(--text-secondary);
+  }
+
+  .error-details {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 12px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    animation: fadeInUp 0.6s ease-out 0.5s backwards;
+  }
+
+  .error-details-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ef4444;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .error-details-list {
+    list-style: none;
+    text-align: left;
+    display: inline-block;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+
+  .error-details-list li {
+    padding-left: 1.5rem;
+    position: relative;
+  }
+
+  .error-details-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #ef4444;
+    font-weight: bold;
+  }
+
+  /* Background decoration */
+  .error-container::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    right: 15%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .error-container::after {
+    content: '';
+    position: absolute;
+    bottom: 20%;
+    left: 15%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+    animation: float 6s ease-in-out infinite reverse;
+  }
+
+  /* Animations */
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .error-code {
+      font-size: 4rem;
+    }
+
+    .error-icon {
+      font-size: 5rem;
+    }
+
+    .error-title {
+      font-size: 1.75rem;
+    }
+
+    .error-message {
+      font-size: 1rem;
+    }
+
+    .error-actions {
+      flex-direction: column;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+
+<div class="error-container">
+  <div class="error-icon-wrapper">
+    <div class="error-icon">🚫</div>
+  </div>
+  
+  <div class="error-code">403</div>
+  <h1 class="error-title">Access Denied</h1>
+  <p class="error-message">
+    You don't have permission to access this page. This area is restricted to authorized users only.
+  </p>
+
+  <div class="error-actions">
+    {% if user.is_authenticated %}
+      <a href="{% if user.userprofile.role == 'ADMIN' %}{% url 'admin_dashboard' %}{% else %}{% url 'teacher_dashboard' %}{% endif %}" class="btn btn-primary">
+        <span>←</span> Go to Dashboard
+      </a>
+    {% else %}
+      <a href="{% url 'login' %}" class="btn btn-primary">
+        <span>🔐</span> Login
+      </a>
+    {% endif %}
+    <a href="{% url 'home' %}" class="btn btn-secondary">
+      <span>🏠</span> Back to Home
+    </a>
+  </div>
+
+  <div class="error-details">
+    <div class="error-details-title">
+      <span>ℹ️</span> Why am I seeing this?
+    </div>
+    <ul class="error-details-list">
+      <li>You may not be logged in to the system</li>
+      <li>Your account doesn't have the required permissions</li>
+      <li>This page is restricted to specific user roles</li>
+      <li>The resource may have been moved or removed</li>
+    </ul>
+  </div>
+</div>
+
+{% endblock %}
