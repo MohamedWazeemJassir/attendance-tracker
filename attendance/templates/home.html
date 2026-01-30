@@ -8,7 +8,12 @@
     text-align: center;
     padding: 4rem 0 6rem;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 1;
   }
 
   .hero-badge {
@@ -56,7 +61,7 @@
   /* Feature Grid */
   .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
     margin: 4rem 0;
     animation: fadeInUp 0.6s ease-out 0.3s backwards;
@@ -152,9 +157,12 @@
 
   .roles-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
     margin-top: 3rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .role-card {
@@ -228,7 +236,7 @@
   /* Stats Section */
   .stats-section {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
     margin: 4rem 0;
     padding: 3rem 2rem;
@@ -353,7 +361,8 @@
     background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
     border-radius: 50%;
     animation: float 6s ease-in-out infinite;
-    z-index: -1;
+    z-index: 0;
+    pointer-events: none;
   }
 
   .hero-section::after {
@@ -366,7 +375,8 @@
     background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
     border-radius: 50%;
     animation: float 8s ease-in-out infinite;
-    z-index: -1;
+    z-index: 0;
+    pointer-events: none;
   }
 
   /* Responsive */
@@ -379,7 +389,10 @@
       font-size: 1rem;
     }
 
-    .features-grid,
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+    
     .roles-grid {
       grid-template-columns: 1fr;
     }
@@ -391,19 +404,31 @@
     .cta-title {
       font-size: 1.75rem;
     }
+    
+    .stats-section {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 1024px) {
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 
 <!-- Hero Section -->
 <div class="hero-section">
-  <div class="hero-badge">✨ Modern Attendance Management</div>
-  <h1 class="hero-title">
-    Student <span class="highlight">Attendance</span><br>Tracker
-  </h1>
-  <p class="hero-subtitle">
-    A simple yet powerful web application to manage students and track attendance
-    with role-based access control. Built for educators, designed for efficiency.
-  </p>
+  <div class="hero-content">
+    <div class="hero-badge">✨ Modern Attendance Management</div>
+    <h1 class="hero-title">
+      Student <span class="highlight">Attendance</span><br>Tracker
+    </h1>
+    <p class="hero-subtitle">
+      A simple yet powerful web application to manage students and track attendance
+      with role-based access control. Built for educators, designed for efficiency.
+    </p>
+  </div>
 </div>
 
 <!-- Stats Section -->
