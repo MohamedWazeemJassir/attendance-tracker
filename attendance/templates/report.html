@@ -1,63 +1,655 @@
 {% extends "base.html" %}
+{% block title %}{{ report_title }} - Student Attendance Tracker{% endblock %}
 {% block content %}
 
-<h2>{{ report_title }}</h2>
+<style>
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    animation: fadeInUp 0.6s ease-out;
+  }
 
+  .page-title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
-<form method="get" style="margin-bottom:15px;">
-  <label>Date:</label>
-  <input type="date" name="date" value="{{ date_value }}">
+  .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
 
-  <label>Student:</label>
-  <input type="text" name="student" value="{{ student_query }}" placeholder="Student name">
+  .page-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
 
-  <label>Class:</label>
-  <input type="text" name="class" value="{{ class_query }}" placeholder="e.g. 10-A">
+  /* Filter Section */
+  .filter-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.6s ease-out 0.1s backwards;
+  }
 
-  <button type="submit">Filter</button>
-</form>
+  .filter-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
-<table border="1">
-  <tr>
-    <th>Student</th>
-    <th>Class</th>
-    <th>Date</th>
-    <th>Status</th>
-    {% if role == "TEACHER" %}
-      <th>Action</th>
+  .filter-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.25rem;
+    align-items: end;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-label {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.3s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  .form-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.875rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    flex: 1;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--background);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+  }
+
+  /* Report Stats */
+  .report-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.6s ease-out 0.2s backwards;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .stat-card.total .stat-icon {
+    background: rgba(37, 99, 235, 0.1);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+  }
+
+  .stat-card.present .stat-icon {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  .stat-card.absent .stat-icon {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .stat-card.unmarked .stat-icon {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  /* Table Container */
+  .table-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out 0.3s backwards;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    padding: 1.25rem 1.5rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: all 0.2s ease;
+  }
+
+  tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  tbody tr:hover {
+    background: var(--background);
+  }
+
+  td {
+    padding: 1.25rem 1.5rem;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+  }
+
+  /* Status Badges */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .status-badge.present {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--secondary);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  .status-badge.absent {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .status-badge.not-marked {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--accent);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* Student Info */
+  .student-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .student-name {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .student-class {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  /* Action Buttons */
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+  }
+
+  .btn-icon:hover {
+    background: var(--background);
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .no-action {
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-description {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+  }
+
+  /* Table Footer */
+  .table-footer {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--background);
+  }
+
+  .table-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .table-info strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .filter-form {
+      grid-template-columns: 1fr;
+    }
+
+    .filter-actions {
+      flex-direction: column;
+    }
+
+    .btn {
+      width: 100%;
+    }
+
+    .report-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .table-wrapper {
+      overflow-x: scroll;
+    }
+
+    table {
+      min-width: 700px;
+    }
+
+    .table-footer {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+  }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-title-section">
+    <h1 class="page-title">
+      <span>📊</span>
+      {{ report_title }}
+    </h1>
+    <p class="page-subtitle">View and analyze attendance records</p>
+  </div>
+</div>
+
+<!-- Filter Section -->
+<div class="filter-section">
+  <h3 class="filter-title">
+    <span>🔍</span>
+    Filter Reports
+  </h3>
+  <form method="get" class="filter-form">
+    <div class="form-group">
+      <label class="form-label">
+        <span>📅</span>
+        Date
+      </label>
+      <input type="date" name="date" value="{{ date_value }}" class="form-input">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        <span>👤</span>
+        Student Name
+      </label>
+      <input type="text" name="student" value="{{ student_query }}" placeholder="Search by student name..." class="form-input">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        <span>🏫</span>
+        Class
+      </label>
+      <input type="text" name="class" value="{{ class_query }}" placeholder="e.g. 10-A" class="form-input">
+    </div>
+
+    <div class="form-group">
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary">
+          <span>🔍</span>
+          Apply Filters
+        </button>
+        <a href="{% url request.resolver_match.url_name %}" class="btn btn-secondary">
+          <span>↻</span>
+          Reset
+        </a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Report Stats -->
+{% if report_data %}
+<div class="report-stats">
+  <div class="stat-card total">
+    <div class="stat-icon">📋</div>
+    <div class="stat-content">
+      <div class="stat-value">{{ report_data|length }}</div>
+      <div class="stat-label">Total Records</div>
+    </div>
+  </div>
+
+  <div class="stat-card present">
+    <div class="stat-icon">✓</div>
+    <div class="stat-content">
+      <div class="stat-value" id="presentCount">0</div>
+      <div class="stat-label">Present</div>
+    </div>
+  </div>
+
+  <div class="stat-card absent">
+    <div class="stat-icon">✗</div>
+    <div class="stat-content">
+      <div class="stat-value" id="absentCount">0</div>
+      <div class="stat-label">Absent</div>
+    </div>
+  </div>
+
+  <div class="stat-card unmarked">
+    <div class="stat-icon">⚠</div>
+    <div class="stat-content">
+      <div class="stat-value" id="unmarkedCount">0</div>
+      <div class="stat-label">Not Marked</div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Attendance Table -->
+<div class="table-container">
+  <div class="table-wrapper">
+    {% if report_data %}
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Date</th>
+          <th>Status</th>
+          {% if role == "TEACHER" %}
+            <th>Action</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in report_data %}
+        <tr data-status="{% if row.attendance %}{{ row.attendance.status|lower }}{% else %}not-marked{% endif %}">
+          <td>
+            <div class="student-cell">
+              <span class="student-name">{{ row.student.name }}</span>
+              <span class="student-class">Class: {{ row.student.class_name }}</span>
+            </div>
+          </td>
+          <td>
+            <span style="font-weight: 500;">{{ row.date|date:"d M Y" }}</span>
+          </td>
+          <td>
+            {% if row.attendance %}
+              {% if row.attendance.status == "PRESENT" %}
+                <span class="status-badge present">
+                  <span class="status-indicator"></span>
+                  Present
+                </span>
+              {% else %}
+                <span class="status-badge absent">
+                  <span class="status-indicator"></span>
+                  Absent
+                </span>
+              {% endif %}
+            {% else %}
+              <span class="status-badge not-marked">
+                <span class="status-indicator"></span>
+                Not Marked
+              </span>
+            {% endif %}
+          </td>
+
+          {% if role == "TEACHER" %}
+            <td>
+              {% if row.can_edit %}
+                <a href="{% url 'edit_attendance' row.attendance.id %}" class="btn-icon" title="Edit Attendance">
+                  ✏️
+                </a>
+              {% else %}
+                <span class="no-action">—</span>
+              {% endif %}
+            </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="table-footer">
+      <div class="table-info">
+        Showing <strong>{{ report_data|length }}</strong> records
+      </div>
+      <div class="table-info">
+        <span id="footerStats"></span>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+      <h3 class="empty-title">No Records Found</h3>
+      <p class="empty-description">Try adjusting your filters or check back later.</p>
+      <a href="{% url request.resolver_match.url_name %}" class="btn btn-secondary">
+        <span>↻</span>
+        Reset Filters
+      </a>
+    </div>
     {% endif %}
-  </tr>
+  </div>
+</div>
 
+<script>
+  // Calculate stats
+  let presentCount = 0;
+  let absentCount = 0;
+  let unmarkedCount = 0;
 
-  {% for row in report_data %}
-  <tr>
-    <td>{{ row.student.name }}</td>
-    <td>{{ row.student.class_name }}</td>
-    <td>{{ row.date|date:"d-m-Y" }}</td>
-    <td>
-      {% if row.attendance %}
-        {{ row.attendance.status }}
-      {% else %}
-        Not Marked
-      {% endif %}
-    </td>
+  document.querySelectorAll('tbody tr').forEach(row => {
+    const status = row.getAttribute('data-status');
+    if (status === 'present') presentCount++;
+    else if (status === 'absent') absentCount++;
+    else if (status === 'not-marked') unmarkedCount++;
+  });
 
-    {% if role == "TEACHER" %}
-      <td>
-        {% if row.can_edit %}
-          <a href="{% url 'edit_attendance' row.attendance.id %}">Edit</a>
-        {% else %}
-          —
-        {% endif %}
-      </td>
-    {% endif %}
-  </tr>
+  // Update stat cards
+  document.getElementById('presentCount').textContent = presentCount;
+  document.getElementById('absentCount').textContent = absentCount;
+  document.getElementById('unmarkedCount').textContent = unmarkedCount;
 
-  {% empty %}
-  <tr>
-    <td colspan="4">No records found.</td>
-  </tr>
-  {% endfor %}
-</table>
+  // Update footer stats
+  const footerStats = document.getElementById('footerStats');
+  if (footerStats) {
+    footerStats.innerHTML = `<strong>${presentCount}</strong> Present • <strong>${absentCount}</strong> Absent • <strong>${unmarkedCount}</strong> Unmarked`;
+  }
+</script>
 
 {% endblock %}
